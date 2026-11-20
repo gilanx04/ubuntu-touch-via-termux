@@ -1,0 +1,20 @@
+# Binary images — not part of the repo
+/bootstrap/
+/system-image/
+/miui/
+*.img
+*.tar.xz
+*.tar.xz.asc
+*.zip
+*.apk
+
+# Local logs and scratch files
+*.log
+*.out
+*.err
+.tmp/
+index-stable.json
+
+# OS cruft
+.DS_Store
+Thumbs.db
