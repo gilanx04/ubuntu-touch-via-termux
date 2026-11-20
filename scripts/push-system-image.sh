@@ -87,7 +87,8 @@ echo "== Verifikasi SHA-256 di perangkat =="
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 (cd "$SRC" && sha256sum ./*.tar.xz) > "$TMP/host.txt"
-adb shell 'cd /cache/recovery && busybox sha256sum ./*.tar.xz' | tr -d '\r' > "$TMP/device.txt"
+adb shell 'cd /cache/recovery && { command -v sha256sum >/dev/null 2>&1 && sha256sum ./*.tar.xz || busybox sha256sum ./*.tar.xz; }' \
+  | tr -d '\r' > "$TMP/device.txt"
 
 if diff -u "$TMP/host.txt" "$TMP/device.txt"; then
   echo "   SHA-256 COCOK"

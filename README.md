@@ -305,11 +305,14 @@ Yang diverifikasi:
 Jika belum, flash Recovery ROM MIUI lewat TWRP:
 
 1. Salin zip ke **SD card / USB OTG** (disarankan) atau internal storage:
+
    ```bash
    su -c "$ADB push miui/miui_SURYAGlobal_V12.0.9.0.QJGMIXM_7f83537667_10.0.zip /sdcard/"
    ```
+
    Simpan di SD card/OTG agar zip tidak ikut terhapus saat installer MIUI
    memformat data.
+
 2. Matikan target, boot TWRP: **Volume Up + Power**.
 3. **Install** → pilih zip MIUI.
 4. Matikan **“Zip signature verification”** — zip ini ditandatangani kunci Xiaomi,
@@ -455,7 +458,7 @@ su -c "$ADB shell sync"
 Verifikasi di perangkat:
 
 ```bash
-su -c "$ADB shell 'cd /cache/recovery && busybox sha256sum ./*.tar.xz'"
+su -c "$ADB shell 'cd /cache/recovery && { command -v sha256sum >/dev/null 2>&1 && sha256sum ./*.tar.xz || busybox sha256sum ./*.tar.xz; }'"
 ```
 
 Bandingkan dengan [`data/SHA256SUMS.txt`](data/SHA256SUMS.txt). Script
@@ -632,10 +635,13 @@ TWRP. Untuk kembali ke MIUI ada dua jalur.
 ### Opsi B — TWRP + Recovery ROM
 
 1. Unduh TWRP untuk `surya`.
+
 2. Flash TWRP lewat fastboot:
+
    ```bash
    su -c "$FB flash recovery twrp.img"
    ```
+
 3. Boot TWRP (**Volume Up + Power**).
 4. Flash zip MIUI Recovery ROM (matikan signature verification).
 5. Reboot ke sistem.

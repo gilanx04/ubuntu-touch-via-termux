@@ -18,14 +18,17 @@ for _ in $(seq 1 120); do
   STATE="$(adb devices 2>/dev/null | awk 'NR>1 && $2!="" {print $2; exit}')"
   case "$STATE" in
     device|recovery)
-      LINE="$(adb shell 'tail -n 3 /cache/ubuntu_updater.log 2>/dev/null' 2>/dev/null | tr -d '\r')"
+      LINE="$(adb shell 'tail -n 1 /cache/ubuntu_updater.log 2>/dev/null' 2>/dev/null | tr -d '\r')"
       if [ -n "$LINE" ] && [ "$LINE" != "$LAST" ]; then
         echo "[$(date +%H:%M:%S)] $LINE"
         LAST="$LINE"
       fi
-      case "$LINE" in
-        *"Done upgrading"*) echo; echo "INSTALASI SELESAI."; exit 0;;
-      esac
+      # tail bisa melewatkan baris terakhir; grep seluruh log.
+      if adb shell 'grep -q "Done upgrading" /cache/ubuntu_updater.log 2>/dev/null' 2>/dev/null; then
+        echo
+        echo "INSTALASI SELESAI."
+        exit 0
+      fi
       ;;
     unauthorized)
       echo "[$(date +%H:%M:%S)] adb unauthorized — tap Allow di layar target"
