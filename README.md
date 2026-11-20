@@ -61,6 +61,7 @@
 | Rootfs | 4.9 GB (`/dev/mapper/system`), 2 GB bebas |
 | Userdata | 103 GB, 98 GB bebas |
 | Channel | `24.04-1.x/arm64/android9plus/stable` |
+| Display | 1080×2400 @ **120 Hz** (DFPS 120/90/60/50/30; tanpa toggle di UI) |
 
 Alur besar:
 
@@ -134,7 +135,8 @@ ubuntu-touch-via-termux/
 │   ├── verifikasi.sh             cek semua SHA-256 / MD5
 │   ├── flash-bootstrap.sh        urutan fastboot (destruktif)
 │   ├── push-system-image.sh      push ke /cache/recovery + verifikasi
-│   └── pantau-instalasi.sh       pantau log upgrader
+│   ├── pantau-instalasi.sh       pantau log upgrader
+│   └── cek-refresh.py            cek mode DRM/refresh rate aktif
 ├── docs/
 │   ├── TROUBLESHOOTING.md        masalah yang pernah muncul + solusinya
 │   ├── TEKNIS.md                 detail partisi, mount, dan cara kerja upgrader
@@ -580,6 +582,55 @@ su -c "$ADB shell 'cat /etc/os-release | head -5'"
 su -c "$ADB shell 'uname -a'"
 su -c "$ADB shell 'df -h / /android/data'"
 ```
+
+### Cek refresh rate 120 Hz
+
+Ubuntu Touch tidak punya pengaturan refresh rate di UI. Mode ditentukan oleh
+timing panel di DTBO dan config HWC yang dipilih compositor Mir. Di surya,
+config yang aktif adalah **120 Hz**.
+
+Cek mode yang sedang dipakai compositor:
+
+```bash
+su -c "$ADB shell 'mirout /run/mir_socket'"
+```
+
+Contoh keluaran:
+
+```text
+Output 1: LVDS, connected, 1080x2400+0+0, enabled, on, 70mm x 154mm (6.7"), normal, 1.00x, unknown, phone
+    1080x2400    120.00*+
+```
+
+`*` menandai mode aktif dan `+` mode preferred. Jika baris panel menunjukkan
+`120.00*`, compositor memang memakai timing 120 Hz.
+
+Panel mendukung DFPS 120/90/60/50/30, sehingga rate bisa turun saat konten
+statis. Itu normal; mode 120 Hz tetap mode yang dipilih compositor.
+
+Verifikasi independen lewat DRM (opsional):
+
+```bash
+su -c "$ADB push $PWD/scripts/cek-refresh.py /tmp/cek-refresh.py"
+su -c "$ADB shell 'python3 /tmp/cek-refresh.py /dev/dri/card0'"
+```
+
+Cari baris `ACTIVE CRTC`:
+
+```text
+ACTIVE CRTC 115: 1080x2400 @ 120Hz  name=1080x2400x120x143404  clock=143404kHz
+```
+
+Untuk memaksa rate 120 pada sesi yang sedang berjalan (tidak perlu kalau sudah
+`120.00*`):
+
+```bash
+su -c "$ADB shell 'mirout /run/mir_socket output 1 rate 120'"
+```
+
+Perintah `mirout` hanya mengubah sesi berjalan, bukan pengaturan permanen.
+Setelah reboot, Mir memilih kembali config HWC default; pada surya config
+default yang teramati adalah 120 Hz.
 
 > [!NOTE]
 > Channel stable bisa menawarkan build lebih baru dari 1.4. Jika kamu ingin tetap

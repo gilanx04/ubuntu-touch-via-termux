@@ -288,7 +288,55 @@ menangani tiga detail: `TMPDIR`, `HOME` (kunci ADB), dan `PATH` setelah `su`.
 
 ---
 
-## 12. Referensi sumber
+## 12. Display dan refresh rate 120 Hz
+
+Surya memakai panel 1080×2400 dengan timing 120 Hz. Di DTBO port, kedua varian
+panel (Huaxing dan Tianma) punya `timing@0` pada 120 fps, dengan daftar DFPS:
+
+```text
+qcom,dsi-supported-dfps-list = <120 90 60 50 30>;
+```
+
+`msm_drm.dsi_display0=...:configX` di cmdline memilih topologi DSI, bukan
+timing. Timing default tetap `timing@0` (120 fps). Kernel membuat lima mode DRM
+(120/90/60/50/30), dan mode pertama yang dipakai HWC adalah 120 Hz.
+
+Mir di Android platform tidak mengekspos pemilihan mode ke UI. Platform memakai
+config HWC yang aktif (`HwcPowerModeControl::active_config_for`), jadi yang
+terlihat di `mirout` adalah mode yang benar-benar dipakai compositor.
+
+Hasil pengujian pada 20 November 2026:
+
+```text
+$ mirout /run/mir_socket
+Output 1: LVDS, connected, 1080x2400+0+0, enabled, on, ...
+    1080x2400    120.00*+
+
+$ python3 cek-refresh.py /dev/dri/card0
+...
+ACTIVE CRTC 115: 1080x2400 @ 120Hz  name=1080x2400x120x143404  clock=143404kHz
+```
+
+`*` = mode aktif, `+` = mode preferred. Baris `ACTIVE CRTC` adalah pengecekan
+independen: mode yang sedang dipakai CRTC memang 120 Hz, bukan sekadar mode
+preferred.
+
+DFPS yang didukung panel adalah 120/90/60/50/30, sehingga rate bisa turun saat
+konten statis. Karena itu, 120 Hz paling terasa saat scroll/animasi; angka di
+`mirout` menunjukkan mode compositor, bukan hasil pengukuran frame per detik.
+
+Untuk mengubah rate sementara:
+
+```bash
+mirout /run/mir_socket output 1 rate 120
+```
+
+Ini bukan pengaturan permanen; setelah reboot Mir kembali memakai config HWC
+default. Tidak ada `xrandr` di Ubuntu Touch karena stack display-nya Mir/Wayland.
+
+---
+
+## 13. Referensi sumber
 
 - Port surya: <https://github.com/ubuntu-touch-surya/ubuntu-touch-surya>
 - Konfigurasi perangkat UBports Installer:
