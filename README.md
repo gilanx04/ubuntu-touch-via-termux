@@ -654,6 +654,9 @@ TWRP. Untuk kembali ke MIUI ada dua jalur.
 - Flash hanya firmware yang sesuai (`surya`, ARB 2).
 - Simpan salinan log instalasi jika terjadi masalah.
 
+> Proyek ini tidak berafiliasi dengan UBports, Xiaomi, maupun Termux.
+> Panduan ini adalah catatan pengujian komunitas, bukan dokumentasi resmi.
+
 ---
 
 ## Sumber dan kredit

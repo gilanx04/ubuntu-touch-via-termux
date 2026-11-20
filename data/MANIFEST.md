@@ -115,7 +115,8 @@ dynamic partition= ya (system/vendor/product di dalam super)
 
 ARB:
 
-- Nilai anti-rollback zip ini = **2** (sesuai perangkat uji).
+- Nilai anti-rollback firmware ini = **2** (dikonfirmasi dari
+  `fastboot getvar anti` pada perangkat uji).
 - Zip Recovery ROM tidak memuat `anti_version.txt`; nilai ARB hanya ada di
   fastboot ROM dan di perangkat (`fastboot getvar anti`).
 - Jangan flash firmware dengan ARB lebih tinggi dari perangkat.
