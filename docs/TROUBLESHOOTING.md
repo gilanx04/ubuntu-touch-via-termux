@@ -236,7 +236,7 @@ adb: error: failed to copy ... : remote No space left on device
 Di UBports Recovery, `/cache` adalah **bind-mount dari `/data/cache`**
 (userdata 103 GB). Partisi cache fisik hanya 344 MB dan **tidak dipakai**.
 Kalau seseorang menjalankan `mount -a`, partisi cache 344 MB menumpuk di atas
-`/cache`, sehingga push 659 MB gagal.
+`/cache`, sehingga push ±690 MB gagal.
 
 **Diagnosa**
 

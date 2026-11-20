@@ -65,7 +65,7 @@ Partisi `system` dibiarkan kosong sampai upgrader memformatnya.
 
 Di UBports Recovery untuk surya, init memasang userdata di `/data`, lalu
 **bind-mount** `/data/cache` ke `/cache`. Partisi cache fisik (344 MB) tidak
-dipakai karena terlalu kecil untuk system image 659 MB.
+dipakai karena terlalu kecil untuk system image ±690 MB.
 
 Akibatnya:
 
@@ -96,7 +96,7 @@ ikut dipasang dan **menumpuk** di atas bind-mount:
 Setelah itu:
 
 - `df -h /cache` menunjukkan 344 MB;
-- push 659 MB gagal `No space left on device`;
+- push ±690 MB gagal `No space left on device`;
 - file yang sudah dipush “hilang” di balik mount.
 
 Solusi: `umount /cache` (satu lapisan), lalu cek inode kembali. **Jangan**
@@ -169,6 +169,9 @@ Urutannya penting:
    tarball, dan menulis boot image.
 6. Setelah selesai: `Done upgrading...`, lalu `sync` dan `tune2fs -m 5` pada
    `/data`.
+7. Script memindahkan `ubuntu_command` menjadi `ubuntu_command.applying` sejak
+   awal, lalu menghapusnya di akhir. Karena itu instalasi **tidak terulang**
+   saat recovery di-boot lagi.
 
 Karena itu, **cukup `adb reboot recovery`** setelah file dipush — tidak perlu
 menekan menu “Install” apa pun.

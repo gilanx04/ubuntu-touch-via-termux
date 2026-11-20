@@ -99,7 +99,7 @@ dialog izin USB. Ini jalur yang dipakai repo ini.
 - Kabel USB **data** (bukan charge-only) + OTG
 - Ruang kosong ±4 GB:
   - bootstrap 1,4 GB
-  - system image 659 MB
+  - system image ±690 MB (659 MiB)
   - MIUI zip 2,3 GB (opsional, hanya jika perlu flash ulang firmware)
 
 ### Target (Poco X3 NFC)
@@ -247,7 +247,7 @@ su -c "$ADB devices -l"
 cd ~/ubuntu-touch-via-termux
 
 bash scripts/unduh-bootstrap.sh       # 1,4 GB
-bash scripts/unduh-system-image.sh    # 659 MB
+bash scripts/unduh-system-image.sh    # ±690 MB
 
 # Opsional — hanya jika target perlu di-flash ulang ke MIUI Android 10:
 bash scripts/unduh-miui.sh            # 2,3 GB
@@ -258,7 +258,7 @@ Ringkasan bahan:
 | Bahan | Isi | Ukuran |
 |---|---|---|
 | `bootstrap/` | `recovery.img`, `dtbo.img`, `super.img`, `vendor.img` | ±1,4 GB |
-| `system-image/24.04-1.4/` | rootfs, device, boot, keyring, version + `.asc` + GPG | ±659 MB |
+| `system-image/24.04-1.4/` | rootfs, device, boot, keyring, version + `.asc` + GPG | ±690 MB (659 MiB) |
 | `miui/` (opsional) | Recovery ROM MIUI V12.0.9.0.QJGMIXM | ±2,3 GB |
 
 Sumber:
@@ -307,7 +307,7 @@ Jika belum, flash Recovery ROM MIUI lewat TWRP:
 1. Salin zip ke **SD card / USB OTG** (disarankan) atau internal storage:
 
    ```bash
-   su -c "$ADB push miui/miui_SURYAGlobal_V12.0.9.0.QJGMIXM_7f83537667_10.0.zip /sdcard/"
+   su -c "$ADB push $PWD/miui/miui_SURYAGlobal_V12.0.9.0.QJGMIXM_7f83537667_10.0.zip /sdcard/"
    ```
 
    Simpan di SD card/OTG agar zip tidak ikut terhapus saat installer MIUI
@@ -424,7 +424,7 @@ Kedua baris harus punya **device dan inode yang sama**.
 > **Jangan menjalankan `mount -a` di UBports Recovery.**
 > Di perangkat ini `/cache` adalah bind-mount dari `/data/cache` (userdata).
 > `mount -a` akan menumpuk partisi cache fisik yang hanya **344 MB** di atasnya.
-> Akibatnya push 659 MB gagal dengan `No space left on device`, dan file yang
+> Akibatnya push ±690 MB gagal dengan `No space left on device`, dan file yang
 > sudah dipush bisa “hilang” di balik mount tersebut.
 
 Jika `df -h /cache` menunjukkan **344M**, lepas mount cache yang menumpuk:
